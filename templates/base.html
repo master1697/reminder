@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>todo app</title>
+    <title>Personal Reminder</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css">
 <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.js"></script>
@@ -11,30 +11,66 @@
 <body>
     <div style =  "margin-top: 50px;" class = "ui container">
 
-    <h1 class = "ui center aligned header">Todo App</h1>
+    <h1 class = "ui center aligned header">Personal Reminder</h1>
+
+<!-- textboxes for all the different fields -->
 
     <form class = "ui form" action="/add" method = "post">
         <div class = "field">
-            <label for="title">Todo Title</label>
-            <input type="text" name="title" placeholder="Enter Todo...">
+            <label for="title">Reminder name</label>
+            <input type="text" name="title" placeholder="Enter task...">
+            <br>
+            
+
+        </div>
+
+
+        <div class = "field">
+            <label for="name">First and last name?</label>
+            <input type="text" name="name" placeholder="Enter full name...">
+            <br>
+            
+
+        </div>
+
+
+  
+        <div class = "field">
+            <label for="date">When would you like to be notified?</label>
+            <input type="datetime-local" name="date" placeholder="Enter date and time...">
+            <br>
+            
+
+        </div>
+
+
+           
+        <div class = "field">
+            <label for="phone">Contact Information</label>
+            <input type="tel" name="phone" placeholder="Enter your phone number here...">
             <br>
             <button class = "ui blue button" type="submit">Add</button>
 
         </div>
     </form>
 
-    {% for todo in todo_list %}
-    <div class="ui segment">
-        <p class="ui big header"> {{ todo.id }} | {{ todo.title }} </p>
+    
+    <!-- for loop for update status -->
 
-        {% if todo.complete == False %}
+    <h1 class = "ui center aligned header">Currently Scheduled</h1>
+    
+    {% for reminder in all_reminders %}
+    <div class="ui segment">
+        <p class="ui big header"> {{ reminder.id }} | {{ reminder.title }} <br> {{ reminder.name }} <br>{{ reminder.date }} <br> {{ reminder.phone }} </p>
+
+        {% if reminder.complete == False %}
             <span class = "ui gray label">Not Completed</span>
         {% else %}
             <span class = "ui green label">Completed</span>
         {% endif %}
 
-        <a class = "ui blue button" href="/update/{{ todo.id }}">Update</a>
-        <a class = "ui red button" href="/delete/{{ todo.id }}">Delete</a>
+        <a class = "ui blue button" href="/update/{{ reminder.id }}">Update</a>
+        <a class = "ui red button" href="/delete/{{ reminder.id }}">Delete</a>
     </div>
     {% endfor %}
 </div>
