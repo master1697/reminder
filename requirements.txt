@@ -137,3 +137,4 @@ widgetsnbextension==4.0.7
 zipp==3.8.1
 zope.interface==5.5.2
 Gunicorn
+flask_sqlalchemy
