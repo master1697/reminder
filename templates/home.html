@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Personal Reminder</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css">
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.js"></script>
+
+    <style>
+        body, html {
+  margin: 0;
+  padding: 0;
+}
+
+
+        .container {
+            display: flex;
+            justify-content: center; 
+            align-items: center; 
+            background: linear-gradient(blue, yellow);
+        } 
+    </style>
+</head>
+
+<body class = "container">
+    <center><h1><font size="+7">Welcome to your Personal Reminder!</font></h1></center>
+    <br><br>
+    <a class = "ui right floated inverted black button" href="/register">Create an Account</a>
+    <a class = "ui right floated inverted black button" href="/login">Login</a>
+    {% if current_user.is_authenticated %}
+    <h1 class="ui green header">You are logged in</h1>
+    <meta http-equiv="refresh" content="0; URL=http://127.0.0.1:5000/base" />
+    {% endif %}
+</body>
+</html>
