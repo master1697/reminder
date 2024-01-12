@@ -13,13 +13,11 @@
     margin: 0;
     padding: 0;
     }
-
-
         .container {
             display: flex;
             justify-content: center; 
             align-items: center; 
-            background: linear-gradient(blue, green);
+            background: linear-gradient(blue,pink);
         } 
     </style>
 </head>
@@ -33,5 +31,12 @@
     <br> <br>
     <button class = "mini ui teal button" type="submit">Submit</button>
     </form>
+
+    {% if current_user.is_authenticated %}
+    <!-- <h1 class="ui green header">You are logged in</h1> -->
+    <meta http-equiv="refresh" content="0; URL=http://127.0.0.1:5000/base" />
+    {% else %}
+    <h1 class="ui red header">Invalid username or password. Please try again or register for a new account.</h1>
+    {% endif %}
 </body>
 </html>

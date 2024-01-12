@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+import datetime as dt
+import time
 from flask_login import LoginManager, UserMixin, current_user, login_user, logout_user
 import smtplib
 import sys
@@ -20,7 +22,9 @@ CARRIERS = {
     "att": "@mms.att.net",
     "tmobile": "@tmomail.net",
     "verizon": "@vtext.com",
-    "sprint": "@messaging.sprintpcs.com"
+    "sprint": "@messaging.sprintpcs.com",
+    "email": "@gmail.com"
+
 }
 
 EMAIL = "remindmenotif@gmail.com"
@@ -104,28 +108,44 @@ def logout():
 @app.route("/add", methods=["POST"])
 def add():
     #add a new item to the todo list
-    print("it's below this")
-    print(current_user.get_id(), file=sys.stderr)
     title = request.form.get("title")
     name = request.form.get("name")
     local_date = request.form.get("date")
     date = datetime.strptime(local_date, '%Y-%m-%dT%H:%M')
     phone = request.form.get("phone")
-    carrier = request.form.get("phone")
-    message = "hey"
+    carrier = request.form.get("carrier")
+    message = "Hey " + name + ", it's time to complete " + title + "!"
     user_id = current_user.get_id()
     new_reminder = Reminder(title = title, name = name, date = date, phone = phone, user_id = user_id, complete = False)
     db.session.add(new_reminder)
     db.session.commit()
-    # recipient = phone + CARRIERS[carrier]
-    # auth = (EMAIL, PASSWORD)
- 
-    # server = smtplib.SMTP("smtp.gmail.com", 587)
-    # server.starttls()
-    # server.login(auth[0], auth[1])
- 
-    # server.sendmail(auth[0], recipient, message)
+    recipient = phone + CARRIERS[carrier]
+    auth = (EMAIL, PASSWORD)
+    server = smtplib.SMTP("smtp.gmail.com", 587)
+    server.starttls()
+    server.login(auth[0], auth[1])
+    send_time = dt.datetime(date.year, date.month, date.day, date.hour, date.minute, date.second) # set your sending time in UTC
+    time.sleep(send_time.timestamp() - time.time())
+    server.sendmail(auth[0], recipient, message)
     return redirect(url_for("index"))
+# def data():
+#     local_date = request.form.get("date")
+#     date = datetime.strptime(local_date, '%Y-%m-%dT%H:%M')
+#     phone = request.form.get("phone")
+#     carrier = request.form.get("carrier")
+#     message = "hey"
+#     recipient = phone + CARRIERS[carrier]
+#     auth = (EMAIL, PASSWORD)
+#     server = smtplib.SMTP("smtp.gmail.com", 587)
+#     server.starttls()
+#     server.login(auth[0], auth[1])
+#     print("hallo")
+#     send_time = dt.datetime(date.year, date.month, date.day, date.hour, date.minute, date.second) # set your sending time in UTC
+#     time.sleep(send_time.timestamp() - time.time())
+#     server.sendmail(auth[0], recipient, message)
+#     print("should have sent bruh")
+
+
 
     
 
@@ -154,7 +174,6 @@ if __name__ == "__main__":
     # phone_number = sys.argv[1]
     # carrier = sys.argv[2]
     # message = sys.argv[3]
-    # print(phone_number, EMAIL, PASSWORD)
  
 
 
