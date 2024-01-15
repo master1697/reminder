@@ -6,6 +6,9 @@ import time
 from flask_login import LoginManager, UserMixin, current_user, login_user, logout_user
 import smtplib
 import sys
+from celery import Celery
+import pytz
+import os
 
 
 app = Flask(__name__)
@@ -13,6 +16,10 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config["SECRET_KEY"] = "abc"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# Celery configuration
+app.config['CELERY_BROKER_URL'] = os.getenv("CELERY_BROKER_URL")
+# 'pyamqp://guest@localhost//'
+# app.config['CELERY_RESULT_BACKEND'] = 'rpc://'
 db = SQLAlchemy(app)
 
 login_manager = LoginManager()
@@ -29,6 +36,24 @@ CARRIERS = {
 
 EMAIL = "remindmenotif@gmail.com"
 PASSWORD = "xkzgnnyogyoakduo"
+
+
+# Create a Celery instance
+celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+celery.conf.update(app.config)
+
+# Define your Celery task
+@celery.task
+def send_sms(recipient, message):
+    # SMTP setup and message creation here...
+    # ...
+    print("celery task!", file=sys.stderr)
+    auth = (EMAIL, PASSWORD)
+    server = smtplib.SMTP("smtp.gmail.com", 587)
+    server.starttls()
+    server.login(auth[0], auth[1])
+    server.sendmail(auth[0], recipient, message)
+    server.quit()
 
     
 class Users(UserMixin, db.Model):
@@ -116,17 +141,20 @@ def add():
     carrier = request.form.get("carrier")
     message = "Hey " + name + ", it's time to complete " + title + "!"
     user_id = current_user.get_id()
+    print(date, file=sys.stderr)
     new_reminder = Reminder(title = title, name = name, date = date, phone = phone, user_id = user_id, complete = False)
     db.session.add(new_reminder)
     db.session.commit()
     recipient = phone + CARRIERS[carrier]
-    auth = (EMAIL, PASSWORD)
-    server = smtplib.SMTP("smtp.gmail.com", 587)
-    server.starttls()
-    server.login(auth[0], auth[1])
-    send_time = dt.datetime(date.year, date.month, date.day, date.hour, date.minute, date.second) # set your sending time in UTC
-    time.sleep(send_time.timestamp() - time.time())
-    server.sendmail(auth[0], recipient, message)
+    # Schedule task 1 hour from now in a specific timezone
+    desired_timezone = request.form.get("timezone")
+    local = pytz.timezone(desired_timezone)
+    local_dt = local.localize(date, is_dst=None)
+    utc_dt = local_dt.astimezone(pytz.utc)
+    print(desired_timezone, file=sys.stderr)
+    print(local_dt, file=sys.stderr)
+    print(utc_dt, file=sys.stderr)
+    send_sms.apply_async(args=[recipient, message], eta=utc_dt)
     return redirect(url_for("index"))
 # def data():
 #     local_date = request.form.get("date")
