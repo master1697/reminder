@@ -139,6 +139,5 @@ zope.interface==5.5.2
 Gunicorn
 flask_sqlalchemy
 flask_login
-celery
+celery==5.3.6
 pytz
-smtplib
