@@ -1,6 +1,7 @@
 import os
 from celery import Celery
 from celery.utils.log import get_task_logger
+import smtplib
 
 app = Celery('tasks', broker=os.getenv("CELERY_BROKER_URL"))
 logger = get_task_logger(__name__)
@@ -13,7 +14,6 @@ def send_sms(recipient, message):
     logger.info(f'Adding {recipient} + {message}')
     # SMTP setup and message creation here...
     # ...
-    print("celery task!", file=sys.stderr)
     auth = (EMAIL, PASSWORD)
     server = smtplib.SMTP("smtp.gmail.com", 587)
     server.starttls()
