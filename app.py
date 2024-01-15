@@ -9,6 +9,7 @@ import sys
 from celery import Celery
 import pytz
 import os
+from tasks import send_sms
 
 
 app = Flask(__name__)
@@ -17,7 +18,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config["SECRET_KEY"] = "abc"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Celery configuration
-app.config['CELERY_BROKER_URL'] = os.getenv("CELERY_BROKER_URL")
+# app.config['CELERY_BROKER_URL'] = os.getenv("CELERY_BROKER_URL")
 # 'pyamqp://guest@localhost//'
 # app.config['CELERY_RESULT_BACKEND'] = 'rpc://'
 db = SQLAlchemy(app)
@@ -39,21 +40,21 @@ PASSWORD = "xkzgnnyogyoakduo"
 
 
 # Create a Celery instance
-celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
-celery.conf.update(app.config)
+# celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+# celery.conf.update(app.config)
 
 # Define your Celery task
-@celery.task
-def send_sms(recipient, message):
-    # SMTP setup and message creation here...
-    # ...
-    print("celery task!", file=sys.stderr)
-    auth = (EMAIL, PASSWORD)
-    server = smtplib.SMTP("smtp.gmail.com", 587)
-    server.starttls()
-    server.login(auth[0], auth[1])
-    server.sendmail(auth[0], recipient, message)
-    server.quit()
+# @celery.task
+# def send_sms(recipient, message):
+#     # SMTP setup and message creation here...
+#     # ...
+#     print("celery task!", file=sys.stderr)
+#     auth = (EMAIL, PASSWORD)
+#     server = smtplib.SMTP("smtp.gmail.com", 587)
+#     server.starttls()
+#     server.login(auth[0], auth[1])
+#     server.sendmail(auth[0], recipient, message)
+#     server.quit()
 
     
 class Users(UserMixin, db.Model):
