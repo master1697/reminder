@@ -35,7 +35,9 @@
     {% if current_user.is_authenticated %}
     <!-- <h1 class="ui green header">You are logged in</h1> -->
     <meta http-equiv="refresh" content="0; URL=http://127.0.0.1:5000/base" />
-    {% else %}
+    {% endif %}
+
+    {% if login_error %}
     <h1 class="ui red header">Invalid username or password. Please try again or register for a new account.</h1>
     {% endif %}
 </body>

@@ -113,6 +113,8 @@ def login():
     if request.method == "POST":
         user = Users.query.filter_by(
             username=request.form.get("username")).first()
+        if not user:
+            return render_template("login.html", login_error=True)
         # Check if the password entered is the 
         # same as the user's password
         if user.password == request.form.get("password"):
@@ -122,8 +124,10 @@ def login():
             print(current_user.get_id(), file=sys.stderr)
             return redirect(url_for("home"))
         # Redirect the user back to the home
-        # (we'll create the home route in a moment)
+        else:
+            return render_template("login.html", login_error=True)
         print(current_user.get_id(), file=sys.stderr)
+
     return render_template("login.html")
 
 @app.route("/logout")
